@@ -23,8 +23,7 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
                 "LASTNAME VARCHAR(100), AGE INT, PRIMARY KEY (ID) )";
 
         Session session = getSession();
-        SQLQuery query = session.createSQLQuery(sql).addEntity(User.class);
-        //session.;
+        session.createSQLQuery(sql).executeUpdate();
 
         closeTransactionSession();
     }
@@ -32,12 +31,11 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
     @Override
     public void dropUsersTable() {
         openTransactionSession();
+        Session session = getSession();
 
         String sql = "DROP TABLE IF EXISTS users";
 
-        Session session = getSession();
-        SQLQuery query = session.createSQLQuery(sql).addEntity(User.class);
-        //session.;
+        session.createSQLQuery(sql).executeUpdate();
 
         closeTransactionSession();
     }
@@ -56,14 +54,16 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
     @Override
     public void removeUserById(long id) {
         openTransactionSession();
-
-        String sql = "DELETE FROM users WHERE ID = :id";
-
         Session session = getSession();
 
-        //SQLQuery query = session.createSQLQuery(sql).addEntity(User.class);
-        //query.setParameter("id", id);
-        session.delete(id);
+//        String sql = "DELETE FROM users WHERE ID = :id";
+//
+//        SQLQuery query = (SQLQuery) session.createSQLQuery(sql).setParameter("id", id);
+//        query.executeUpdate();
+
+        User user = (User) session.load(User.class, id);
+        session.delete(user);
+        session.flush();
 
         closeTransactionSession();
     }
@@ -72,7 +72,7 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
     public List<User> getAllUsers() {
         openTransactionSession();
 
-        String sql = "SELECT * FROM users";
+        String sql = "SELECT ID, NAME, LASTNAME, AGE FROM users";
 
         Session session = getSession();
         SQLQuery query = session.createSQLQuery(sql).addEntity(User.class);
@@ -87,12 +87,11 @@ public class UserDaoHibernateImpl extends Util implements UserDao {
     @Override
     public void cleanUsersTable() {
         openTransactionSession();
+        Session session = getSession();
 
         String sql = "DELETE FROM users";
 
-        Session session = getSession();
-        SQLQuery query = session.createSQLQuery(sql).addEntity(User.class);
-        //session.;
+        session.createSQLQuery(sql).executeUpdate();
 
         closeTransactionSession();
     }
